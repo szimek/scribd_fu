@@ -10,7 +10,7 @@ module ScribdFu
 
       desc "This generator creates a scribd_fu configuration file"
       def copy_configuration_file
-        copy_file 'scribd_fu.yml', 'config/scridb_fu.yml'
+        copy_file 'scribd_fu.yml', 'config/scribd_fu.yml'
       end
     end
   end
