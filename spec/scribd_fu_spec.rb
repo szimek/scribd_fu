@@ -66,7 +66,7 @@ describe "An AttachmentFu model" do
               @scribd_user.should_receive(:upload).with(:file => "some%20filename%20with%20spaces", :access => 'access').and_return(res)
               ScribdFu::upload(@document, "some filename with spaces")
             end
-            
+
           end
 
           describe "and uploading to Scribd succeeded" do
@@ -187,13 +187,13 @@ describe "A Paperclip model" do
               @attached_file.stub!(:path => "/path/to/somewhere with spaces.pdf")
               @attachment.stub!(:update_attributes)
             end
-            
+
             it "should sanitize the file path" do
               res = mock('response', :doc_id => 1, :access_key => "ASDF")
               @scribd_user.should_receive(:upload).with(:file => "/path/to/somewhere%20with%20spaces.pdf", :access => 'access').and_return(res)
               ScribdFu::upload(@attachment, "/path/to/somewhere with spaces.pdf")
             end
-            
+
           end
 
           describe "and uploading to Scribd succeeded" do
@@ -270,39 +270,39 @@ end
 describe "Viewing an iPaper document" do
   before do
     rebuild_model
-    
+
     config = YAML.load_file("spec/scribd_fu.yml")
     File.stub!(:file?).with(ScribdFu::ConfigPath).and_return(true)
     YAML.stub!(:load_file).and_return(config)
-    
+
     Document.class_eval do
       has_ipaper_and_uses 'AttachmentFu'
     end
-    
+
     @document = Document.new
     @document.attributes = {:ipaper_id => 'doc_id', :ipaper_access_key => 'access_key'}
   end
-  
+
   it "should return this HTML by default" do
     @document.display_ipaper.gsub(/\s{2,}/, "").should == "<script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script><div id=\"embedded_flash\"></div><script type=\"text/javascript\">var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');scribd_doc.write(\"embedded_flash\");</script>\n"
   end
-  
+
   it "should allow custom alt text" do
     @document.display_ipaper(:alt => "something").should =~ /.*<div id="embedded_flash">something<\/div>.*/
   end
-  
+
   it "should allow custom Javascript params" do
     options = {:height => 100, :width => 100}
-    
+
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('height', '100'\);.*/
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
   end
-  
+
   it "should allow not allow crazy custom Javascript params" do
     options = {:some_dumb_setting => 100, :width => 100}
-    
+
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
     @document.display_ipaper(options).should_not =~ /.*scribd_doc\.addParam\('some_dumb_setting', '100'\);.*/
   end
-  
+
 end

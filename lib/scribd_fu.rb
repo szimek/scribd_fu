@@ -1,7 +1,21 @@
+module ScridbFu; end
+
+if Rails::VERSION::MAJOR == 2
+  rails_root = Rails.respond_to?(:root) ? Rails.root : RAILS_ROOT
+  ScribdFu::ConfigPath = "#{rails_root}/config/scribd_fu.yml".freeze
+else
+  module ScribdFu
+    class Railtie < Rails::Railtie
+      railtie_name :scridb_fu
+
+      initializer "scribd_fu.set_config_path" do |app|
+        ScribdFu::ConfigPath = "#{Rails.root}/config/scribd_fu.yml".freeze
+      end
+    end
+  end
+end
+
 module ScribdFu
-
-  ConfigPath = "#{RAILS_ROOT}/config/scribd_fu.yml".freeze
-
   # A list of content types supported by iPaper.
   ContentTypes = [
     'application/pdf',
